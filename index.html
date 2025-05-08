@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color: gray;">
+  <h1 id="connection_condition">ESP32 WebSocket Communication</h1>
+  <h2>LED Control</h2>
+  <button id="btn" style="font-size: 20px; padding: 15px 30px; font-family: Arial;" value="ON" onclick="on_off()">ON</button>
+  
+  <h2>Live Data from FastAPI via WebSocket</h2>
+  <h3 id="data">Connecting...</h3>
+  
+  <script>
+    const send_ws = new WebSocket("ws://192.168.110.172:8000/ws");
+    const get_ws = new WebSocket("ws://192.168.110.172:8000/ws/get_data");
+
+    send_ws.onopen = () => console.log("Send WebSocket connected");
+    send_ws.onmessage = (e) => console.log("Message from server:", e.data);
+    
+    get_ws.onopen = () => {
+      document.getElementById("connection_condition").innerText = "Connected to WebSocket";
+    };
+
+    get_ws.onclose = () => {
+      document.getElementById("connection_condition").innerText = "WebSocket Disconnected";
+    };
+
+    // Get data from API
+    get_ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log("Received data:", data);
+        document.getElementById("data").innerText = `Temperature: ${data.Temperature} °C,\n Humidity: ${data.Humidity} %,\n MQ135 Value: ${data["MQ135 Value"]}`;
+    };
+
+    // Control LED
+    function on_off() {
+      const data = document.getElementById("btn").value;
+      if (send_ws.readyState === WebSocket.OPEN) {
+            if(data == "ON"){
+                send_ws.send(data);
+                document.getElementById("btn").value = "OFF";
+                document.getElementById("btn").innerHTML = "OFF";
+                console.log("Sent:", data);
+            }
+            else{
+                send_ws.send(data);
+                document.getElementById("btn").value = "ON";
+                document.getElementById("btn").innerHTML = "ON";
+                console.log("Sent:", data);
+            }
+        } else {
+            console.error("WebSocket not open yet.");
+            alert("WebSocket is not connected yet. Please wait a moment.");
+        }
+        }
+  </script>
+</body>
+</html>
+
+
