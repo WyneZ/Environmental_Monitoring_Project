@@ -1,0 +1,19 @@
+version: '3'
+services:
+  fastapi-app:
+    build: .
+    ports:
+      - "8000:8000"
+    networks:
+      - fastapi-mqtt-network
+
+  mqtt-broker:
+    image: arm64v8/mosquitto
+    ports:
+      - "1883:1883"
+    networks:
+      - fastapi-mqtt-network
+
+networks:
+  fastapi-mqtt-network:
+    driver: bridge

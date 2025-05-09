@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastAPI WebSocket + Mongo</title>
+</head>
+<body>
+    <h2>Submit Message</h2>
+    <input type="text" id="textInput" placeholder="Type something..." />
+    <button onclick="submitData()">Send</button>
+
+    <h3>Messages:</h3>
+    <ul id="messages"></ul>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws");
+
+        ws.onmessage = function(event) {
+            const msgList = document.getElementById("messages");
+            const li = document.createElement("li");
+            li.textContent = event.data;
+            msgList.appendChild(li);
+        };
+
+        async function submitData() {
+            const input = document.getElementById("textInput");
+            const value = input.value;
+            if (!value) return;
+
+            await fetch("http://localhost:8000/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: value })
+            });
+
+            input.value = '';
+        }
+    </script>
+</body>
+</html>
