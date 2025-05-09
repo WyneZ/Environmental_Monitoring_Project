@@ -4,6 +4,8 @@
   <title>ESP32 Socket.IO Communication</title>
   <!-- Include Socket.IO client -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script> -->
+
 </head>
 <body style="background-color: gray;">
   <h1 id="connection_condition">ESP32 Socket.IO Communication</h1>
@@ -16,7 +18,7 @@
 
   <script>
     // Connect to your FastAPI Socket.IO server
-    const socket = io("http://192.168.110.172:8003"); // update with your backend IP:port
+    const socket = io("http://192.168.110.172:8003", {transports: ["polling"],}); // update with your backend IP:port
 
     // Connection events
     socket.on("connect", () => {
