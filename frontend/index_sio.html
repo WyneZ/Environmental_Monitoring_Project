@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 Socket.IO Communication</title>
+  <!-- Include Socket.IO client -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body style="background-color: gray;">
+  <h1 id="connection_condition">ESP32 Socket.IO Communication</h1>
+  
+  <h2>LED Control</h2>
+  <button id="btn" style="font-size: 20px; padding: 15px 30px; font-family: Arial;" value="ON" onclick="on_off()">ON</button>
+  
+  <h2>Live Data from FastAPI via Socket.IO</h2>
+  <h3 id="data">Connecting...</h3>
+
+  <script>
+    // Connect to your FastAPI Socket.IO server
+    const socket = io("http://192.168.110.172:8003"); // update with your backend IP:port
+
+    // Connection events
+    socket.on("connect", () => {
+      document.getElementById("connection_condition").innerText = "Connected to Socket.IO";
+      console.log("Socket.IO connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      document.getElementById("connection_condition").innerText = "Disconnected";
+    });
+
+    // Handle incoming sensor data
+    socket.on("esp32_data", (data) => {
+      console.log("Received data:", data);
+      document.getElementById("data").innerText = `Temperature: ${data.Temperature} °C,\n Humidity: ${data.Humidity} %,\n Air Quality(MQ135): ${data.AirQuality}`;
+    });
+
+    // Control LED
+    function on_off() {
+      const button = document.getElementById("btn");
+      const value = button.value;
+
+      if (socket.connected) {
+        socket.emit("send_to_esp32", value); // Event name must match backend
+        button.value = value === "ON" ? "OFF" : "ON";
+        button.innerHTML = button.value;
+        console.log("Sent:", value);
+      } else {
+        console.error("Socket.IO not connected.");
+        alert("Socket.IO not connected. Try again.");
+      }
+    }
+  </script>
+</body>
+</html>
