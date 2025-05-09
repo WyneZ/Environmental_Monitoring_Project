@@ -1,3 +1,7 @@
+
+
+
+
 import socketio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,9 +11,11 @@ import asyncio
 import json
 
 # Socket.IO server (ASGI mode)
-sio = socketio.AsyncServer(cors_allowed_origins="*")
+
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
 app = FastAPI()
 sio_app = socketio.ASGIApp(sio, other_asgi_app=app)
+
 
 # Event loop for MQTT thread-safe operations
 loop = None
@@ -87,3 +93,7 @@ async def send_to_esp32(sid, data):
         print("Sent to ESP32")
     else:
         print("Failed to send to ESP32")
+
+@app.get("/")
+async def root():
+    return {"message": "Hello world!"}
