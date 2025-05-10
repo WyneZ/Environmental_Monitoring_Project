@@ -28,21 +28,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(api_router)
 
 # Socket.IO Events
 @sio.event
 async def connect(sid, environ):
-    print(f"Client connected: {sid}")
+    print(f"<Subscriber> Client connected: {sid}")
 
 @sio.event
 async def disconnect(sid):
-    print(f"Client disconnected: {sid}")
+    print(f"<Subscriber> Client disconnected: {sid}")
 
-@sio.event
-async def send_to_esp32(sid, data):
+@sio.on("send_to_esp32")
+async def handle_send_to_esp32(sid, data):
+    device_id = data.get("device_id")
+    value = data.get("value")
+    
+    print(f"📦 Received for {device_id}: {value}")
+    
     from app.mqtt.publisher import publish_to_esp32
-    print(f"Data from frontend to ESP32: {data}")
     publish_to_esp32(data)
 
 
