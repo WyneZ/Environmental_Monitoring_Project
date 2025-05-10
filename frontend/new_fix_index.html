@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 Socket.IO Communication</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body style="background-color: gray;">
+  <h1 id="connection_condition">ESP32 Socket.IO Communication</h1>
+
+  <h2>Choose Device</h2>
+  <select id="device_selector" onchange="updateSelectedDevice()" style="font-size: 18px; padding: 5px;">
+    <option value="">-- Select Device --</option>
+  </select>
+
+  <h2>LED Control</h2>
+  <button id="btn" style="font-size: 20px; padding: 15px 30px;" value="ON" onclick="on_off()">ON</button>
+
+  <h2>Live Data</h2>
+  <h3 id="device">Waiting for device selection...</h3>
+  <h3 id="data">Waiting for data...</h3>
+
+  <script>
+    const socket = io("http://192.168.110.172:8005", { transports: ["polling"] });
+
+    let selectedDeviceId = "";
+    const deviceSet = new Set();
+
+    socket.on("connect", () => {
+      console.log("✅ Connected:", socket.id);
+      document.getElementById("connection_condition").innerText = "Connected to Socket.IO";
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ Disconnected from server");
+      document.getElementById("connection_condition").innerText = "Disconnected";
+    });
+
+    // Receiving array of device IDs
+    socket.on("devices", (deviceList) => {
+      console.log("📡 Received devices array:", deviceList);
+      const selector = document.getElementById("device_selector");
+
+      if (!Array.isArray(deviceList)) {
+        console.warn("Expected array of device IDs but got:", deviceList);
+        return;
+      }
+
+      deviceList.forEach((device_id) => {
+        if (!deviceSet.has(device_id)) {
+          deviceSet.add(device_id);
+          const option = document.createElement("option");
+          option.value = device_id;
+          option.text = device_id;
+          selector.appendChild(option);
+        }
+      });
+    });
+
+    // Handle sensor data (filtered)
+    socket.on("datas", (data) => {
+      console.log("📥 Received data:", data);
+      if (data.device_id === selectedDeviceId) {
+        document.getElementById("device").innerText = `Device: ${data.device_id}`;
+        document.getElementById("data").innerText =
+          `Temperature: ${data.temperature} °C\n` +
+          `Humidity: ${data.humidity} %\n` +
+          `Air Quality (MQ135): ${data.air_quality}\n` +
+          `Time: ${data.timestamp}`;
+      }
+      if (data.LED_status === "OFF") {
+        document.getElementById("btn").value = "ON";
+        document.getElementById("btn").innerHTML = "ON";
+      } else {
+        document.getElementById("btn").value = "OFF";
+        document.getElementById("btn").innerHTML = "OFF";
+      }
+    });
+
+    function updateSelectedDevice() {
+      const selector = document.getElementById("device_selector");
+      selectedDeviceId = selector.value;
+      document.getElementById("device").innerText = selectedDeviceId
+        ? `Device: ${selectedDeviceId}`
+        : "No device selected";
+      document.getElementById("data").innerText = "Waiting for new data...";
+      console.log("✅ Selected device:", selectedDeviceId);
+    }
+
+    function on_off() {
+      const button = document.getElementById("btn");
+      const value = button.value;
+
+      if (!selectedDeviceId) {
+        alert("❗ Please select a device first.");
+        return;
+      }
+
+      if (socket.connected) {
+        const eventName = `send_to_esp32`;
+
+        socket.emit(eventName, { device_id: selectedDeviceId, value: value });
+        button.value = value === "ON" ? "OFF" : "ON";
+        button.innerHTML = button.value;
+        console.log("🔘 Sent to", selectedDeviceId, ":", value, eventName);
+      } else {
+        console.error("❌ Socket.IO not connected.");
+        alert("Socket.IO not connected. Try again.");
+      }
+    }
+  </script>
+</body>
+</html>
