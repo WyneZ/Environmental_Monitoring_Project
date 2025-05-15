@@ -1,0 +1,97 @@
+____Projec Flow____
+
+[ ESP32 ] <-- MQTT --> [ MQTT Broker ]
+                        |
+                        v
+                [ FastAPI Backend ]
+               /         |        \
+     [ MongoDB ]   [ Socket.IO ]  [ REST API ]
+                        |
+                    [ Web Dashboard (React) ]
+
+
+
+____Data Flow____
+-HTTP      > -LED default value (ESP32 -> API -> FrontEnd)
+             -User Signup/Login (FrontEnd <-> API)(Using JWT)
+             -Device Register (ESP32 <-> API)(Using JWT)
+
+-SocketIO  > -Send Sensors' Data from DB to FrontEnd
+             -Send LED's status(ON/OFF) from FrontEnd (FrontEnd -> API -> ESP32)(from API to ESP32 using MQTT)
+
+-MQTT      > -Publish >Send Sensors' Data to API
+                      >When LED's status changes, Send back immediately LED status to API (ESP32 -> API -> FrontEnd)
+                      >Check Device's status(Online/Offline) for every 10s and Send to API
+             
+             -Subscribe >Receive LED's status from FrontEnd (FrontEnd -> API -> ESP32)
+
+
+
+
+____Database(MongoDB)____
+1.User_col
+    {
+        "_id":
+        "email":
+        "password":
+        "status": Login/Logout
+        "access_token": (For Authentication)
+        "own_devices": ["device_1", "device_2", "device_3"]
+        "timestamp": (To detect When Login or Logout)
+    }
+
+2.Device_col
+    {
+        "_id":
+        "device_id":
+        "device_name":
+        "status": "Online/Offline"
+        "device_token": (For Authentication)
+        "owner_id": 
+        "room_id": 
+        "timestamp": (To detect Device's Lifetime)
+    }
+
+3.Data_col
+    {
+        "_id":
+        "device_id":
+        "temperature":
+        "humidity":
+        "air_quality":
+        "timestamp":
+    }
+
+4.Control_col (Like LED, Switch)
+    {
+        "_id":
+        "device_id":
+        "LED_1": {
+            "type": LED/Switch
+            "pin": 2
+            "status": ON/OFF
+            "timestamp: (To detect LED's Lifetime)
+        }
+    }
+
+5.Room_col (Like Living Room, Dining Room, Bed Room)
+    {
+        "_id":
+        "room_name":
+        "owner_id":
+        "created_time":
+    }
+
+
+
+
+____Tech Stack____
+-FrontEnd: React
+-Backend: FastAPI
+-Database: MongoDB
+-Protocols: SocketIO, HTTP, MQTT
+-Security: JWT Authentication
+
+
+
+
