@@ -92,10 +92,6 @@ Detailed documentation is available in the `docs` directory, including:
 * **API Endpoints**: Descriptions of available backend APIs.
 * **Sensor Calibration**: Guidelines for calibrating and validating sensor data.([GitHub][2])
 
-## 🤝 Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request. For major changes, open an issue first to discuss potential improvements.
-
 ## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
