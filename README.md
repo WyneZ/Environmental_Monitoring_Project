@@ -16,14 +16,14 @@ This project aims to provide a scalable and modular solution for environmental m
 
 * **Hardware**:
 
-  * Microcontroller (e.g., ESP32, Arduino)
-  * Environmental sensors (e.g., temperature, humidity, air quality)
+  * ESP32S3
+  * DHT22, MQ135, LED
 * **Software**:
 
-  * Python 3.x
-  * Node.js and npm
+  * FastAPI
+  * MQTT(Mosquitto)
   * Arduino IDE (for firmware development)
-  * MongoDB or another database system([GitHub][3], [Digi International][4], [GitHub][5])
+  * MongoDB
 
 ### Installation
 
