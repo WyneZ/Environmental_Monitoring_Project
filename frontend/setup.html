@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BLE Wi-Fi Setup - Configure Wi-Fi</title>
+</head>
+<body>
+  <h1>Configure Wi-Fi</h1>
+  <div id="deviceInfo"></div>
+  <form id="wifiForm">
+    <label>SSID: <input type="text" id="ssid" required></label><br><br>
+    <label>Password: <input type="text" id="password" required></label><br><br>
+    <button type="submit">Send Wi-Fi Config</button>
+  </form>
+  <p id="response"></p>
+
+  <script>
+    // Parse device address from query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const deviceAddress = urlParams.get("address")
+    document.getElementById("deviceInfo").textContent = `Device Name: ${deviceAddress}`;
+
+    const form = document.getElementById("wifiForm");
+    const responseEl = document.getElementById("response");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const ssid = document.getElementById("ssid").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const res = await fetch("http://localhost:8000/nimble/setup_wifi", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ssid,
+            password,
+            device_address: deviceAddress
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await res.json();
+        if (data.success === true) {
+          window.location.href = "http://127.0.0.1:5500/show_devices.html";
+        }
+        else {
+          responseEl.textContent = "Wi-Fi setup failed. Please check credentials and try again.";
+        }
+      } catch (err) {
+        responseEl.textContent = "Failed to send Wi-Fi config.";
+      }
+    });
+  </script>
+</body>
+</html>

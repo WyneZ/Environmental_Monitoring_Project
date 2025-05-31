@@ -1,29 +1,32 @@
 ____Projec Flow____
-
+                            Pi
 [ ESP32 ] <-- MQTT --> [ MQTT Broker ]
                         |
                         v
                 [ FastAPI Backend ]
                /         |        \
      [ MongoDB ]   [ Socket.IO ]  [ REST API ]
-                        |
+                         |              |
                     [ Web Dashboard (React) ]
 
 
 
 ____Data Flow____
--HTTP      > -LED default value (ESP32 -> API -> FrontEnd)
-             -User Signup/Login (FrontEnd <-> API)(Using JWT)
-             -Device Register (ESP32 <-> API)(Using JWT)
+-HTTP       > -LED default value (ESP32 -> API -> FrontEnd) when client request
+              -User Signup/Login (FrontEnd <-> API)(Using JWT)
+              -Device Register (ESP32 <-> API)(Using JWT)
 
--SocketIO  > -Send Sensors' Data from DB to FrontEnd
-             -Send LED's status(ON/OFF) from FrontEnd (FrontEnd -> API -> ESP32)(from API to ESP32 using MQTT)
+              -Room create/edit 
+              -Send Bluetooth Scan devices
 
--MQTT      > -Publish >Send Sensors' Data to API
-                      >When LED's status changes, Send back immediately LED status to API (ESP32 -> API -> FrontEnd)
-                      >Check Device's status(Online/Offline) for every 10s and Send to API
+-Socket.IO  > -Send Sensors' Data from DB to FrontEnd
+              -Send LED's status(ON/OFF) from FrontEnd (FrontEnd -> API -> ESP32)(from API to ESP32 using MQTT)
+
+-MQTT       > -Publish >Send Sensors' Data to API
+                       >When LED's status changes, Send back immediately LED status to API (ESP32 -> API -> FrontEnd)
+                       >Check Device's status(Online/Offline) for every 10s and Send to API
              
-             -Subscribe >Receive LED's status from FrontEnd (FrontEnd -> API -> ESP32)
+              -Subscribe >Receive LED's status from FrontEnd (FrontEnd -> API -> ESP32)
 
 
 
@@ -46,9 +49,9 @@ ____Database(MongoDB)____
         "device_id":
         "device_name":
         "status": "Online/Offline"
-        "device_token": (For Authentication)
-        "owner_id": 
-        "room_id": 
+        "device_token": (For Authentication) # don't need now
+        "owner_id": (related or empty)
+        "room_id": ""
         "timestamp": (To detect Device's Lifetime)
     }
 
@@ -82,6 +85,15 @@ ____Database(MongoDB)____
         "created_time":
     }
 
+__show all room___
+rooms = Room.find() <<related to user
+
+__room__(for show related devices)
+{
+    room_id: [],
+    room_id: [],
+
+}
 
 
 
@@ -91,6 +103,7 @@ ____Tech Stack____
 -Database: MongoDB
 -Protocols: SocketIO, HTTP, MQTT
 -Security: JWT Authentication
+
 
 
 

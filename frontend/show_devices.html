@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BLE Wi-Fi Setup - Devices</title>
+</head>
+<body>
+  <h1>Select a Device</h1>
+  <div id="deviceList">Scanning...</div>
+
+  <script>
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function scanDevices() {
+      const res = await fetch("http://localhost:8000/nimble/scan");
+      if (!res.ok) {
+        document.getElementById("deviceList").textContent = "Failed to scan devices";
+        return;
+      }
+      const devices = await res.json();
+
+      const list = document.getElementById("deviceList");
+      list.innerHTML = "";
+
+      if (devices.length === 0) {
+        list.textContent = "No devices found";
+        return;
+      }
+
+      devices.forEach(device => {
+        const btn = document.createElement("button");
+        btn.textContent = `${device.name}`;
+        btn.style.display = "block";
+        btn.style.margin = "8px 0";
+
+        btn.onclick = () => {
+          try {
+            const connect = fetch(`http://localhost:8000/nimble/connect/${encodeURIComponent(device.metadata.mac)}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                address: device.address,
+              })
+            });
+
+            if (!connect.ok) {
+              throw new Error("Network response was not ok");
+            }
+          } catch (err) {
+          }
+          sleep(3000);
+          window.location.href = `setup.html?name=${encodeURIComponent(device.name)}&address=${encodeURIComponent(device.metadata.mac)}`;
+        };
+        list.appendChild(btn);
+      });
+    }
+
+    scanDevices();
+  </script>
+</body>
+</html>

@@ -31,9 +31,13 @@ WantedBy=multi-user.target
 15:55:04.178 -> Chip ID: B07C
 15:55:04.178 -> Full Unique ID: B07CDA7C5824
 
+15:23:05.899 -> ID: B07CDA7C5824
 
 # used
 18:08:19.856 -> MAC Address: 24:58:7C:DA:22:E4
 18:08:19.856 -> Chip ID: E422
 18:08:19.856 -> Full Unique ID: E422DA7C5824
+
+15:21:10.993 -> ID: E422DA7C5824
+
 

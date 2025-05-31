@@ -1,22 +1,19 @@
-
-
 from motor.motor_asyncio import AsyncIOMotorClient
+from app.config import settings
 
 
-mongo_client = None
-db = None
-collectoion = None
+MONGO_URI = settings.MONGO_URI
+MONGO_DB = settings.MONGO_DB
 
-def connect_to_mongo():
-    global mongo_client, db, collection
-    client = AsyncIOMotorClient("mongodb://admin:admin@localhost:27017")
-    db = client["ESP32_Datas"]
-    collection = db["dataCollection"]
-    print("WTF Bro. I have been connected")
+mongo_client = AsyncIOMotorClient(MONGO_URI)
+db = mongo_client[MONGO_DB]
 
 
-def get_collectoin():
-    print("I give him to my collection.")
-    if collection is None:
-        raise RuntimeError("MongoDB collection is not initialized. Call connect_to_mongo() first.")
-    return collection
+def get_collection(name: str):
+    return db[name]
+
+def change_IdToStr(doc):
+    doc["id"] = str(doc["_id"])
+    del doc["_id"]
+    return doc
+

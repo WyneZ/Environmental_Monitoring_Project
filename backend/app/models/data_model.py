@@ -1,6 +1,5 @@
 
 
-
 from pydnatic import BaseModel
 
 class SensorData(BaseModel):
