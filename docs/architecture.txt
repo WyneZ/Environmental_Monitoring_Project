@@ -82,7 +82,9 @@ ____Database(MongoDB)____
         "_id":
         "room_name":
         "owner_id":
-        "created_time":
+        "devices_count":
+        "created_at":
+        "last_updated":
     }
 
 __show all room___

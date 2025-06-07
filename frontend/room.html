@@ -1,16 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BLE Wi-Fi Setup - Scan</title>
+  <title>Room</title>
 </head>
 <body>
-  <h1>BLE Wi-Fi Setup</h1>
-  <button id="scanBtn">Scan Devices</button>
+  <button id="scanBtn">Add Devices</button>
+
+  <h1>Devices</h1>
+  <div id="device-list"></div>
 
   <script>
-    document.getElementById("scanBtn").addEventListener("click", () => {
-      window.location.href = "show_devices.html";
-    });
+    // document.getElementById("scanBtn").addEventListener("click", () => {
+    //   window.location.href = "show_devices.html";
+    // });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get("room_id");
+
+    async function loadDevices() {
+        const res = await fetch(`http://localhost:8000/rooms/${roomId}`);
+        const data = await res.json();
+        const list = document.getElementById('device-list');
+        list.innerHTML = '';
+
+        if (!data.devices || data.devices.length === 0) {
+            list.innerHTML = '<p>No devices found in this room.</p>';
+            return;
+        }
+
+        data.devices.forEach(device => {
+            const div = document.createElement('div');
+            div.className = 'device-card';
+            div.innerHTML = `
+                <p><strong>ID:</strong> ${device._id}</p>
+                <p><strong>Name:</strong> ${device.device_name || 'Unknown'}</p>
+                <button onclick="removeDevice('${device._id}')">Remove</button>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    async function removeDevice(deviceId) {
+        const res = await fetch(`http://localhost:8000/devices/${deviceId}/remove`, {
+            method: 'PUT'
+        });
+        if (res.ok) {
+            alert("Device removed!");
+            loadDevices();
+        } else {
+            alert("Failed to remove device.");
+        }
+    }
+
+    loadDevices();
+
   </script>
 </body>
 </html>

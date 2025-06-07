@@ -10,7 +10,7 @@ class Metadata(BaseModel):
 class Device(BaseModel):
     device_id: Optional[str] = None
     name: Optional[str] = None
-    owener_id: Optional[str] = None
+    owner_id: Optional[str] = None
     room_id: Optional[str] = None
     location: Optional[str] = None
     status: Optional[str] = None

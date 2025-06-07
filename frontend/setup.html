@@ -16,7 +16,7 @@
   <script>
     // Parse device address from query string
     const urlParams = new URLSearchParams(window.location.search);
-    const deviceAddress = urlParams.get("address")
+    const deviceAddress = urlParams.get("address");
     document.getElementById("deviceInfo").textContent = `Device Name: ${deviceAddress}`;
 
     const form = document.getElementById("wifiForm");

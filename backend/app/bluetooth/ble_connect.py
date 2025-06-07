@@ -2,6 +2,7 @@ from bleak import BleakClient
 from bleak.exc import BleakError
 import asyncio
 from ..models.device import Metadata, Device
+from app.db.crud import get_all, update_one
 
 
 async def bluetooth_Connect(address: str, uuid_dict: dict):
@@ -26,7 +27,20 @@ async def bluetooth_Connect(address: str, uuid_dict: dict):
         for s in services:
             if service_uuid is None and s.uuid.startswith("00000000-0000-0000-0000-"):
                 service_uuid = s.uuid
-                
+                metadata = Metadata(mac=str(client.address), service_uuid=service_uuid)
+                for device in await get_all("devices_col"):
+                    print("D->", device)
+                    print("Id->", device["_id"])
+                    print(type(device["_id"]))
+                    print("Metadata->", metadata)
+                    if device["metadata"]["mac"] == metadata.mac and device["metadata"]["service_uuid"] == "unknown":
+                        device["metadata"]["service_uuid"] = metadata.service_uuid
+                        data = dict(device)
+                        data.pop("_id", None)
+                        result = await update_one("devices_col", device["_id"], data)
+                        print("Device is updated in BLE-Connect :", metadata.service_uuid)
+                        print("Updated:", result)
+                        break
                 print("Service UUID:", service_uuid)
         
         if service_uuid:

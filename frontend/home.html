@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+
+    <h1>WiFi Setup For Devices</h1>
+    <button id="scanBtn">Scan Devices</button>
+    <hr>
+    <!-- Add Room Form -->
+    <form method="post" onsubmit="return addRoom(event)">
+        <input type="text" name="name" placeholder="Room Name" required />
+        <button type="submit">Create Room</button>
+    </form>
+    <hr>
+    <h1>All Rooms</h1>
+    <!-- Room List -->
+    <ul id="room-list">
+        <!-- JavaScript will populate this -->
+    </ul>
+
+    <script>
+        document.getElementById("scanBtn").addEventListener("click", () => {
+            window.location.href = "show_devices.html";
+        });
+
+        // Fetch and display all rooms
+        async function loadRooms() {
+            const res = await fetch('http://localhost:8000/rooms');
+            const data = await res.json();
+            const list = document.getElementById('room-list');
+            console.log("Rooms data:", data);
+            list.innerHTML = '';
+            if (data.length === 0) {
+                list.innerHTML = '<li>No rooms available</li>';
+                return;
+            }
+            data.forEach(room => {
+                const li = document.createElement('li');
+                li.innerHTML = `${room.room_name}`;
+                console.log("Room id:", room._id);
+                li.onclick = () => {
+                    const connect = fetch(`http://localhost:8000/rooms/${encodeURIComponent(room._id)}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ room_id: room._id })
+                    });
+                    window.location.href = `room.html?room_id=${encodeURIComponent(room._id)}`;
+                }
+                list.appendChild(li);
+            });
+        }
+
+        // Submit new room
+        async function addRoom(event) {
+            event.preventDefault();
+            const form = event.target;
+            const room = {
+                room_name: form.name.value,
+                devices_count: 0,
+                last_updated: new Date().toISOString()
+            };
+            const res = await fetch('http://localhost:8000/rooms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(room)
+            });
+            if (res.ok) {
+                form.reset();
+                loadRooms();
+            } else {
+                alert("Failed to add room");
+            }
+        }
+
+        loadRooms();
+    </script>
+</body>
+</html>
