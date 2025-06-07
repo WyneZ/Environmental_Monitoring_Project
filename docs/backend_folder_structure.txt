@@ -1,0 +1,53 @@
+Environmental_Monitoring_Project/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                  # FastAPI entrypoint
+│   ├── config.py                # App settings (env, secrets, MQTT configs)
+│   ├── models/                  # Pydantic + MongoDB schemas
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── device.py
+│   │   ├── sensors_data.py
+│   │   ├── control.py
+│   │   ├── room.py
+│   │   └── heartbeat.py
+│   ├── db/                      # MongoDB config and helpers
+│   │   ├── __init__.py
+│   │   └── mongodb.py
+│   ├── api/                     # FastAPI routers
+│   │   ├── __init__.py
+│   │   ├── auth.py              # OTP, JWT, login
+│   │   ├── users.py             # For user-related operation
+│   │   ├── rooms.py             
+│   │   ├── nimble.py            
+│   │   ├── devices.py           # For device registration/status
+│   │   └── sensors.py           # For sensor data (e.g., telemetry)
+│   ├── services/                # Core business logic
+│   │   ├── __init__.py
+│   │   ├── auth_service.py
+│   │   ├── device_service.py    
+│   │   └── sensor_service.py
+│   ├── mqtt/                    # MQTT client (publisher/subscriber)
+│   │   ├── __init__.py
+│   │   ├── client.py            # Manages MQTT client instance
+│   │   ├── publisher.py         # Publishes messages
+│   │   └── subscriber.py        # Subscribes to topics and handles messages
+│   ├── socketio/                # Socket.IO integration
+│   │   ├── __init__.py
+│   │   ├── manager.py           # emit/receive events
+│   │   └── heartbeat.py         # real-time status
+│   ├── ble/                     # BLE with bleak (Wi-Fi provisioning)
+│   │   ├── __init__.py
+│   │   └── ble_manager.py
+│   ├── utils/                   # Helpers (email, hashing, OTP, etc.)
+│   │   ├── __init__.py
+│   │   ├── email.py
+│   │   ├── jwt.py
+│   │   └── security.py
+│   └── tasks/                   # Background tasks (e.g. heartbeat checks)
+│       ├── __init__.py
+│       └── heartbeat_checker.py
+├── requirements.txt
+├── .env                         # environment variables
+├── README.md
+└── run.py                       # to start the app (e.g., uvicorn app.main:app)

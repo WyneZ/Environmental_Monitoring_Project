@@ -1,0 +1,5 @@
+15.5.2025
+-Device activeဖြစ်/မဖြစ်ကို ဘယ်နှစက္ကန့် တစ်ခါပို့မလဲ (API ကို publish လုပ်မလဲ)
+-Data_col ကို အချိန်တစ်ခုအထိ(eg.1day/1month) store ထားပြီး အဲ့တာကိုမှ average ပြန်တွက်ပြီး အခြား col တစ်ခုမှာ storeပြီး Data_col ကို clear လုပ်မလား?
+-sensorတွေမှာရော activeဖြစ်/မဖြစ် statusထားမလား? timestampရော ထည့်မလား?
+

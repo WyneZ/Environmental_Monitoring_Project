@@ -1,0 +1,95 @@
+To get your **frontend (React, Vue, or static HTML)**, **host it locally** on the Pi, and **automatically launch it in kiosk mode** using the **Openbox autostart file**, follow these steps:
+
+---
+
+## ✅ Step-by-Step: Get Frontend, Host It, and Launch in Kiosk
+
+---
+
+### 🔧 1. **Build Frontend on Your Dev Machine**
+
+If using React:
+
+```bash
+npm run build
+```
+
+It will generate a `/build` folder.
+
+---
+
+### 🚀 2. **Transfer Frontend to Raspberry Pi**
+
+From your dev machine:
+
+```bash
+scp -r ./build pi@<PI_IP_ADDRESS>:/home/pi/frontend
+```
+
+Now your frontend is in:
+
+```
+/home/pi/frontend
+```
+
+---
+
+### 🌐 3. **Serve the Frontend on Raspberry Pi**
+
+Use Python's built-in HTTP server:
+
+```bash
+cd ~/frontend
+python3 -m http.server 8000
+```
+
+> This will serve your site at `http://localhost:8000`.
+
+To make it automatic, you can use a systemd service (I can help set that up too).
+
+---
+
+### 🖥️ 4. **Update Openbox Autostart File to Launch Kiosk**
+
+Edit the Openbox autostart file:
+
+```bash
+nano ~/.config/openbox/autostart
+```
+
+Paste this content:
+
+```bash
+xset s off
+xset -dpms
+xset s noblank
+chromium-browser --noerrdialogs --disable-infobars --disable-translate --kiosk http://localhost:8000
+```
+
+Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
+
+---
+
+### 🔁 5. **Reboot to Test**
+
+```bash
+sudo reboot
+```
+
+When Pi boots:
+
+* It launches X11
+* Loads Openbox
+* Starts Chromium in **kiosk mode**
+* Chromium opens `http://localhost:8000` and shows your frontend
+
+---
+
+Would you like help setting up a `systemd` service to keep the local server always running in the background?
+
+
+
+
+
+Environmental_Monitoring_Project/environmental_monitoring_frontend/dist/
+
